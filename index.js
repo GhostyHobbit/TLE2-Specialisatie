@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import SignsRouter from "./Routes/signsRouter.js";
 
 const app = express();
 
@@ -32,6 +33,8 @@ app.listen(process.env.EXPRESS_PORT, () => {
 app.get('/',(req,res)=> {
     res.json({message: 'Welcome to the API, use OPTIONS for more options.'})
 })
+
+app.use('/signs', SignsRouter)
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
