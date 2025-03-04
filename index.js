@@ -1,6 +1,5 @@
 import express from 'express';
 import mongoose from 'mongoose';
-// import episodesRouter from "./routes/episodesRouter.js";
 
 const app = express();
 
@@ -25,7 +24,6 @@ app.use((req, res, next) => {
     }
 });
 
-// app.use('/', episodesRouter);
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
