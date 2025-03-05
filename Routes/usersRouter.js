@@ -17,12 +17,35 @@ router.get('/', async (req, res) => {
             }
         }));
 
-        res.json({ users });
+        res.json({ users: items });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
+//GET single user
+router.get('/:id', async (req, res) => {
+    try {
+        const user = await Users.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        const baseUrl = `${req.protocol}://${req.get('host')}/users`;
+        const item = {
+            ...user.toObject(),
+            _links: {
+                self: { href: `${baseUrl}/${user._id}` },
+                collection: { href: baseUrl }
+            }
+        };
+        res.json(item);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 //POST voor Users
 router.post('/', async (req, res) => {

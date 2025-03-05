@@ -2,6 +2,7 @@ import express from 'express';
 import mongoose from 'mongoose';
 import SignsRouter from "./Routes/signsRouter.js";
 import usersRouter from "./Routes/usersRouter.js";
+import deleteOldUsers from "./Tasks/deleteOldUsers.js";
 
 const app = express();
 
@@ -26,6 +27,8 @@ app.use((req, res, next) => {
     }
 });
 
+// 86400000 is 24 hours
+setInterval(deleteOldUsers, 86400000);
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
