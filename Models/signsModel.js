@@ -10,6 +10,4 @@ const signsSchema = new mongoose.Schema({
 
 const Signs = mongoose.model('Signs', signsSchema);
 
-
-
 export default Signs;
