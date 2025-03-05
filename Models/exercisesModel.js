@@ -7,6 +7,6 @@ const exerciseSchema = new mongoose.Schema({
     lesson_id : { type: Number, required: true },
 });
 
-const Excercise = mongoose.model('Excercises', exerciseSchema);
+const Exercise = mongoose.model('Exercises', exerciseSchema);
 
-export default Excercise;
+export default Exercise;
