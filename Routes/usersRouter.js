@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
 
         const validRoles = ['user', 'docent'];
         if (!validRoles.includes(role)) {
-            return res.status(400).json({ message: 'Ongeldige rol. Toegestane rollen zijn: user, teacher, moderator, admin.' });
+            return res.status(400).json({ message: 'Ongeldige rol. Toegestane rollen zijn: user, docent' });
         }
 
         const newUser = await Users.create({
