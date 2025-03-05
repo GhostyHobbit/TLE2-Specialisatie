@@ -1,6 +1,8 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import SignsRouter from "./Routes/signsRouter.js";
+import ApiKey from "./Models/apiKeyModel.js";
+import ApiKeyRouter from "./Routes/apiKeyRouter.js";
 
 const app = express();
 
@@ -25,6 +27,18 @@ app.use((req, res, next) => {
     }
 });
 
+app.use(async(req, res, next) => {
+    const apiHeader = req.headers['apikey'];
+    let key = [];
+    key = await ApiKey.findOne({});
+
+    if (apiHeader === key.key) {
+        next()
+    } else {
+        res.status(401).send('Unauthorized');
+    }
+})
+
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
@@ -35,6 +49,7 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
+app.use('/keygen', ApiKeyRouter)
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
