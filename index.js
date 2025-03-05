@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import exerciseRouter from './Routes/exerciseRouter.js';
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use((req, res, next) => {
     }
 });
 
+app.use('/exercises', exerciseRouter);
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
