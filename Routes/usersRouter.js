@@ -77,5 +77,52 @@ router.post('/', async (req, res) => {
     }
 });
 
+//PUT voor users
+router.put('/:id', async (req, res) => {
+    try {
+        const { username, email, password, role } = req.body;
+
+        const user = await Users.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User niet gevonden' });
+        }
+
+        user.username = username
+        user.email = email
+        user.password = password
+        user.role = role
+
+        await user.save();
+
+        const baseUrl = `${req.protocol}://${req.get('host')}/users`;
+        const updatedUser = {
+            ...user.toObject(),
+            _links: {
+                self: { href: `${baseUrl}/${user._id}` },
+                collection: { href: baseUrl }
+            }
+        };
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+//DELETE voor users
+router.delete('/:id', async (req, res) => {
+    try {
+        const user = await Users.findByIdAndDelete(req.params.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User niet gevonden' });
+        }
+        res.json({ message: `Gebruiker ${user.username} succesvol verwijderd` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
 
 export default router;
