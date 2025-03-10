@@ -7,7 +7,7 @@ const userSchema = new mongoose.Schema({
     role: {
         type: String,
         required: true,
-        enum: ['user', 'docent'],
+        enum: ['user', 'teacher'],
     },
     created_at: { type: Date, default: Date.now }
 });
