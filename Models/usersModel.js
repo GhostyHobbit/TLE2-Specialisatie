@@ -6,7 +6,7 @@ const userSchema = new mongoose.Schema({
     password: { type: String, required: true },
     role: { type: String, required: true },
     created_at: {type: Date, default: Date.now},
-    user_key: { type: Number, required: true },
+    user_key: { type: String, required: true },
     });
 
 const Users = mongoose.model('Users', userSchema);
