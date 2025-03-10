@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-    try{
+  try{
     const data = req.body;
         const exercise = await Exercise.create({
             type: req.body.type,
@@ -30,8 +30,8 @@ router.post('/', async (req, res) => {
             lesson_id: req.body.lesson_id,
         });
         res.status(201).json(exercise);
-    }catch{
-        res.status(400).json({error: 'Invalid data'});
+    }catch(error){
+        res.status(400).json({error: "invalid data"}); });
     }
 });
 
