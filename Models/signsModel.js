@@ -5,7 +5,6 @@ const signsSchema = new mongoose.Schema({
      image: { type: String, required: true },
      lesson_id: { type: Number, required: true },
      category_id: { type: Number, required: false },
-     saved: { type: Boolean, required: true },
     });
 
 const Signs = mongoose.model('Signs', signsSchema);
