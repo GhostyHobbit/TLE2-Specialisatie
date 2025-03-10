@@ -25,7 +25,8 @@ apiRouter.post('/', async (req, res) => {
         await apiKey.save();
 
         res.status(201).json({
-            message: "Key saved"
+            key: key,
+            message: `Key saved. ${key}`
         });
     } catch (e) {
         res.status(400).json({
