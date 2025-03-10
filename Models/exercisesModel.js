@@ -5,7 +5,7 @@ const exerciseSchema = new mongoose.Schema({
      question: { type: String, required: true },
      answer: { type: String, required: true },
      lesson_id : { type: Number, required: true },
-    });
+   });
 
 const Exercise = mongoose.model('Excercise', exerciseSchema);
 
