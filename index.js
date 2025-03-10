@@ -1,5 +1,6 @@
 import express from 'express';
 import mongoose from 'mongoose';
+import exerciseRouter from './Routes/exerciseRouter.js';
 import SignsRouter from "./Routes/signsRouter.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
@@ -27,6 +28,7 @@ app.use((req, res, next) => {
     }
 });
 
+app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
 
 app.use(async(req, res, next) => {
