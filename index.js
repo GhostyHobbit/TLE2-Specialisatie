@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import SignsRouter from "./Routes/signsRouter.js";
+import categoryRouter from "./Routes/categoryRouter.js";
 
 const app = express();
 
@@ -35,6 +36,8 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
+app.use('/', categoryRouter)
+
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})

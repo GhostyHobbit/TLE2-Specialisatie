@@ -1,4 +1,4 @@
-import Category from "../Models/Categories.js"; // Assuming you have a Category model
+import Category from "../Models/categoriesModel.js";
 import { Router } from "express";
 import { faker } from "@faker-js/faker";
 
@@ -15,40 +15,17 @@ CategoriesRouter.options('/Categories/:id', (req, res) => {
     res.status(204).end();
 });
 
-// Seed Route
-CategoriesRouter.post('/Categories/seed/:id', async (req, res) => {
-    // Add seed logic for categories
-});
-
 // Create Category
-CategoriesRouter.post('/Categories', async (req, res) => {
-    const { name, description, method } = req.body;
-    const categoryAmount = req.body.amount;
+CategoriesRouter.post('/Categories/', async (req, res) => {
+    const { categoryName,  } = req.body;
 
-    if(method === "SEED") {
-        await Category.deleteMany({}); // Clear categories for seeding
-        for (let i = 1; i <= categoryAmount; i++) {
-            let fakeCategory = new Category({
-                name: faker.commerce.department(), // Fake category name
-                description: faker.lorem.sentence(), // Fake category description
-            });
-
-            await fakeCategory.save();
-        }
-
-        res.json({
-            message: 'Categories seeded successfully',
-        });
-        return; // Return after seeding to prevent further execution
-    }
-
-    if (!name || !description) {
+    if (!categoryName ) {
         return res.status(400).json({
-            message: 'Missing or empty required fields (name, description)',
+            message: 'Missing or empty required field (name)',
         });
     }
 
-    const category = new Category({ name, description });
+    const category = new Category({ categoryName });
 
     try {
         await category.save();
@@ -78,7 +55,7 @@ CategoriesRouter.get('/Categories/:id', async (req, res) => {
 // Update Category
 CategoriesRouter.put('/Categories/:id', async (req, res) => {
     const { id } = req.params;
-    const { name, description } = req.body;
+    const { categoryName } = req.body;
 
     const categoryToUpdate = await Category.findById(id);
 
@@ -86,14 +63,14 @@ CategoriesRouter.put('/Categories/:id', async (req, res) => {
         return res.status(404).json({ message: 'Category not found' });
     }
 
-    if (!name || !description) {
+    if (!categoryName) {
         return res.status(400).json({
-            message: 'Missing or empty required fields (name, description)',
+            message: 'Missing or empty required fields (name)',
         });
     }
 
-    categoryToUpdate.name = name;
-    categoryToUpdate.description = description;
+    categoryToUpdate.categoryName = categoryName;
+
 
     try {
         await categoryToUpdate.save();
