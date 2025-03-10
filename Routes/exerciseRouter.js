@@ -23,6 +23,15 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try{
     const data = req.body;
+     if(Array.isArray(data)){
+            const exercises = req.body;
+            const result = await Exercise.insertMany(exercises);
+            res.status(201).json({
+                message: 'Exercises added',
+                exercises: result
+            });
+    
+    }else if(typeof data === 'object' && !Array.isArray(data)){
         const exercise = await Exercise.create({
             type: req.body.type,
             question: req.body.question,
@@ -30,10 +39,20 @@ router.post('/', async (req, res) => {
             lesson_id: req.body.lesson_id,
         });
         res.status(201).json(exercise);
-    }catch(error){
-        res.status(400).json({error: "invalid data"});
+}
+}catch(error){
+        res.status(400).json({error: error.message});
     }
 }); 
+
+router.delete('/', async (req, res) => {
+    try {
+        await Exercise.deleteMany({});
+        res.status(204).send();
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 
 export default router;
