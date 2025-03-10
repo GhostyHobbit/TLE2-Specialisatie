@@ -27,12 +27,14 @@ app.use((req, res, next) => {
     }
 });
 
+app.use('/keygen', ApiKeyRouter)
+
 app.use(async(req, res, next) => {
     const apiHeader = req.headers['apikey'];
     let key = [];
     key = await ApiKey.findOne({});
 
-    if (apiHeader === key.key) {
+    if (apiHeader === key.key || req.method === 'OPTIONS') {
         next()
     } else {
         res.status(401).send('Unauthorized');
@@ -49,7 +51,6 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
-app.use('/keygen', ApiKeyRouter)
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
