@@ -31,9 +31,9 @@ router.post('/', async (req, res) => {
         });
         res.status(201).json(exercise);
     }catch(error){
-        res.status(400).json({error: "invalid data"}); });
+        res.status(400).json({error: "invalid data"});
     }
-});
+}); 
 
 
 export default router;
