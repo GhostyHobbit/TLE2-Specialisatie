@@ -4,6 +4,7 @@ import exerciseRouter from './Routes/exerciseRouter.js';
 import SignsRouter from "./Routes/signsRouter.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
+import categoryRouter from "./Routes/categoryRouter.js";
 
 const app = express();
 
@@ -53,7 +54,7 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
-
+app.use('/categories', categoryRouter)
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
     res.header('Allow', 'GET, POST, OPTIONS');

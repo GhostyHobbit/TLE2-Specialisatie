@@ -5,18 +5,18 @@ import { faker } from "@faker-js/faker";
 const CategoriesRouter = new Router();
 
 // OPTIONS Routes
-CategoriesRouter.options('/Categories', (req, res) => {
+CategoriesRouter.options('/', (req, res) => {
     res.setHeader('Allow', 'GET,POST,OPTIONS');
     res.status(204).end();
 });
 
-CategoriesRouter.options('/Categories/:id', (req, res) => {
+CategoriesRouter.options('/:id', (req, res) => {
     res.setHeader('Allow', 'GET,PUT,DELETE,OPTIONS');
     res.status(204).end();
 });
 
 // Create Category
-CategoriesRouter.post('/Categories/', async (req, res) => {
+CategoriesRouter.post('/', async (req, res) => {
     const { categoryName,  } = req.body;
 
     if (!categoryName ) {
@@ -36,7 +36,7 @@ CategoriesRouter.post('/Categories/', async (req, res) => {
 });
 
 // Get Category by ID
-CategoriesRouter.get('/Categories/:id', async (req, res) => {
+CategoriesRouter.get('/:id', async (req, res) => {
     try {
         const category = await Category.findById(req.params.id);
 
@@ -53,7 +53,7 @@ CategoriesRouter.get('/Categories/:id', async (req, res) => {
 });
 
 // Update Category
-CategoriesRouter.put('/Categories/:id', async (req, res) => {
+CategoriesRouter.put('/:id', async (req, res) => {
     const { id } = req.params;
     const { categoryName } = req.body;
 
@@ -81,7 +81,7 @@ CategoriesRouter.put('/Categories/:id', async (req, res) => {
 });
 
 // Delete Category
-CategoriesRouter.delete('/Categories/:id', async (req, res) => {
+CategoriesRouter.delete('/:id', async (req, res) => {
     try {
         const deletedCategory = await Category.findByIdAndDelete(req.params.id);
 
@@ -99,7 +99,7 @@ CategoriesRouter.delete('/Categories/:id', async (req, res) => {
 });
 
 // Get All Categories
-CategoriesRouter.get('/Categories', async (req, res) => {
+CategoriesRouter.get('/', async (req, res) => {
     try {
         const categories = await Category.find({});
         res.status(200).json({
