@@ -89,7 +89,7 @@ CategoriesRouter.delete('/Categories/:id', async (req, res) => {
             return res.status(404).json({ message: 'Category not found' });
         }
 
-        res.status(204).json({
+        res.status(200).json({
             message: 'Category deleted successfully',
             category: deletedCategory,
         });
