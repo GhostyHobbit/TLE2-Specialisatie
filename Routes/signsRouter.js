@@ -62,56 +62,46 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-
-    // try {
-    //     if (req.body.title === "") {
-    //         res.status(400).json({
-    //             message: `Fill in the title`,
-    //         });
-    //     } else {
-    //
-    //         const newSign = await Signs.create({
-    //             title: req.body.title,
-    //             image: req.body.image,
-    //             lesson_id: req.body.lesson_id,
-    //             category_id: req.body.category_id,
-    //             handShape: req.body.handShape,
-    //             saved: req.body.saved,
-    //         });
-    //         res.status(201).json({
-    //             message: `You created ${newSign.title}`,
-    //             id: newSign._id
-    //         });
-    //     }
-    // } catch (e) {
-    //     res.status(404).send('Not found');
-    // }
-
     try {
-        const { title, image, lesson_id, category } = req.body;
+        if (req.body.title === "") {
+            res.status(400).json({
+                message: `Fill in the title`,
+            });
+        } else {
+            const data = req.body;
+            if (Array.isArray(data)) {
+                const signs = req.body;
+                const result = await Signs.insertMany(signs);
+                res.status(201).json({
+                    message: 'Signs added',
+                    signs: result
+                });
+            } else if (typeof data === 'object' && !Array.isArray(data)) {
+                const {title, image, lesson_id, category} = req.body;
 
-        // Validate that the category exists
-        const categoryExists = await Category.findById(category);
-        if (!categoryExists) {
-            return res.status(400).json({ message: 'Category not found' });
+                // Validate that the category exists
+                const categoryExists = await Category.findById(category);
+                if (!categoryExists) {
+                    return res.status(400).json({message: 'Category not found'});
+                }
+
+                // Create a new sign
+                const newSign = new Signs({
+                    title,
+                    image,
+                    lesson_id,
+                    category
+                });
+
+                // Save the sign to the database
+                await newSign.save();
+
+                // Respond with the created sign
+                res.status(201).json(newSign);
+            }
         }
-
-        // Create a new sign
-        const newSign = new Signs({
-            title,
-            image,
-            lesson_id,
-            category
-        });
-
-        // Save the sign to the database
-        await newSign.save();
-
-        // Respond with the created sign
-        res.status(201).json(newSign);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error', error: error.message });
+        } catch (e) {
+        res.status(404).send('Not found');
     }
 });
 
@@ -160,8 +150,6 @@ router.post('/seed', async (req, res) => {
     res.status(201).json({
         message: `You created a,b,c,d,e`
     });
-
-
 });
 
 
