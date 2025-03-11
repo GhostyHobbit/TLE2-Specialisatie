@@ -1,7 +1,9 @@
 import express from 'express';
 import Signs from "../Models/signsModel.js";
+import Users from '../models/usersModel.js';
 import {tr} from "@faker-js/faker";
 import Category from "../Models/categoriesModel.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -16,7 +18,8 @@ router.options('/', (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const signs = await Signs.find();
+        const signs = await Signs.find()
+            .populate({path: 'users', select: 'username email role'});
         const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
 
         const items = signs.map(signs => ({
@@ -77,7 +80,7 @@ router.post('/', async (req, res) => {
                     signs: result
                 });
             } else if (typeof data === 'object' && !Array.isArray(data)) {
-                const {title, image, lesson_id, category} = req.body;
+                const {title, image, category, lesson} = req.body;
 
                 // Validate that the category exists
                 const categoryExists = await Category.findById(category);
@@ -89,12 +92,20 @@ router.post('/', async (req, res) => {
                 const newSign = new Signs({
                     title,
                     image,
-                    lesson_id,
-                    category
+                    category,
+                    lesson
                 });
+                const users = await Users.find()
+                let userIds = users.map(user => new mongoose.Types.ObjectId(user._id));
+                newSign.users = userIds;
 
                 // Save the sign to the database
                 await newSign.save();
+
+                await Users.updateMany(
+                    { _id: { $in: userIds } },
+                    { $addToSet: { lessons: newSign._id } }
+                );
 
                 // Respond with the created sign
                 res.status(201).json(newSign);

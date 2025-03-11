@@ -4,13 +4,19 @@ const lessonSchema = new mongoose.Schema({
     title: { type: String, required: true },
     users: [{
         type: Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Users',
         required: true
     }]
 });
 
 lessonSchema.virtual('lessonCategories', {
     ref: 'Category', //The Model to use
+    localField: '_id', //Find in Model, where localField
+    foreignField: 'lesson', // is equal to foreignField
+});
+
+lessonSchema.virtual('lessonSigns', {
+    ref: 'Signs', //The Model to use
     localField: '_id', //Find in Model, where localField
     foreignField: 'lesson', // is equal to foreignField
 });

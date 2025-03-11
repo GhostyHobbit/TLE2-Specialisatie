@@ -13,9 +13,14 @@ const userSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Lesson',
         required: true
+    }],
+    signs: [{
+        type: Schema.Types.ObjectId,
+        ref: 'Signs',
+        required: true
     }]
     });
 
-const Users = mongoose.model('Users', userSchema);
+const Users =  mongoose.model('Users', userSchema);
 
 export default Users;

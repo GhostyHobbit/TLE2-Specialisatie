@@ -2,13 +2,16 @@ import express from 'express';
 import Users from '../models/usersModel.js';
 import Lesson from "../Models/lessonsModel.js";
 import mongoose from "mongoose";
+import Signs from "../Models/signsModel.js";
 
 const router = express.Router();
 
 //GET voor Users
 router.get('/', async (req, res) => {
     try {
-        const users = await Users.find();
+        const users = await Users.find()
+            .populate({path: 'lessons', select: 'title'})
+            .populate({path: 'signs', select: 'title'});
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
 
         const items = users.map(user => ({
@@ -56,7 +59,10 @@ router.post('/', async (req, res) => {
         const lessons = await Lesson.find(); // Fetch all lessons
         let lessonIds = lessons.map(lesson => new mongoose.Types.ObjectId(lesson._id));
         users.lessons = lessonIds;
-        console.log(users.lessons);
+
+        const signs = await Signs.find(); // Fetch all lessons
+        let signIds = signs.map(sign => new mongoose.Types.ObjectId(sign._id));
+        users.signs = signIds;
 
         if (!Array.isArray(users)) {
             users = [users]
@@ -74,12 +80,18 @@ router.post('/', async (req, res) => {
         const existingEmails = existingUsers.map(user => user.email)
         const newUsers = users.filter(user => !existingEmails.includes(user.email))
 
-
         const insertedUsers = await Users.insertMany(newUsers);
-        await Lesson.updateMany(
-            { _id: { $in: lessonIds } },
-            { $addToSet: { users: users._id } }
-        );
+
+        for (const user of insertedUsers) {
+            await Lesson.updateMany(
+                { _id: { $in: lessonIds } },
+                { $addToSet: { users: user._id } }
+            );
+            await Signs.updateMany(
+                { _id: { $in: signIds } },
+                { $addToSet: { users: user._id } }
+            );
+        }
 
         res.status(201).json({
             message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingEmails.length} Gebruikers bestaan al`,
