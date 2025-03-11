@@ -1,4 +1,4 @@
-import Users from '../models/usersModel.js';
+import Users from '../Models/usersModel.js';
 
 // Function that deletes users older than 6 months
 async function deleteOldUsers() {

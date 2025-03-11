@@ -1,5 +1,4 @@
 import {Router} from "express";
-import apiKeyModel from "../Models/apiKeyModel.js";
 import ApiKey from "../Models/apiKeyModel.js";
 
 const apiRouter = new Router();

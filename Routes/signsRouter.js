@@ -1,9 +1,9 @@
 import express from 'express';
 import Signs from "../Models/signsModel.js";
-import Users from '../models/usersModel.js';
+import Users from '../Models/usersModel.js';
+import {tr} from "@faker-js/faker";
 import Category from "../Models/categoriesModel.js";
 import mongoose from "mongoose";
-
 
 const router = express.Router();
 
