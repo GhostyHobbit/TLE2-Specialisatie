@@ -67,19 +67,28 @@ router.post('/', async (req, res) => {
                 message: `Fill in the title`,
             });
         } else {
-
-            const newSign = await Signs.create({
-                title: req.body.title,
-                image: req.body.image,
-                lesson_id: req.body.lesson_id,
-                category_id: req.body.category_id,
-                handShape: req.body.handShape,
-                saved: req.body.saved,
-            });
-            res.status(201).json({
-                message: `You created ${newSign.title}`,
-                id: newSign._id
-            });
+            const data = req.body;
+            if(Array.isArray(data)){
+                const signs = req.body;
+                const result = await Signs.insertMany(signs);
+                res.status(201).json({
+                    message: 'Signs added',
+                    signs: result
+                });
+            }else if(typeof data === 'object' && !Array.isArray(data)){
+                const newSign = await Signs.create({
+                    title: req.body.title,
+                    image: req.body.image,
+                    lesson_id: req.body.lesson_id,
+                    category_id: req.body.category_id,
+                    handShape: req.body.handShape,
+                    saved: req.body.saved,
+                });
+                res.status(201).json({
+                    message: `You created ${newSign.title}`,
+                    id: newSign._id
+                });
+            }
         }
     } catch (e) {
         res.status(404).send('Not found');

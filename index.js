@@ -2,6 +2,8 @@ import express from 'express';
 import mongoose from 'mongoose';
 import exerciseRouter from './Routes/exerciseRouter.js';
 import SignsRouter from "./Routes/signsRouter.js";
+import usersRouter from "./Routes/usersRouter.js";
+import deleteOldUsers from "./Tasks/deleteOldUsers.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
 
@@ -28,6 +30,8 @@ app.use((req, res, next) => {
     }
 });
 
+// 86400000 is 24 hours
+setInterval(deleteOldUsers, 86400000);
 app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
 
@@ -52,6 +56,8 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
+
+app.use('/users', usersRouter)
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
