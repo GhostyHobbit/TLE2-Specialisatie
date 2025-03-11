@@ -9,9 +9,12 @@ const userSchema = new mongoose.Schema({
         required: true,
         enum: ['user', 'teacher'],
     },
-    created_at: { type: Date, default: Date.now }
-});
+    created_at: {type: Date, default: Date.now},
+    user_key: { type: String, required: true },
+    });
 
 const Users = mongoose.model('Users', userSchema);
+
+ 
 
 export default Users;

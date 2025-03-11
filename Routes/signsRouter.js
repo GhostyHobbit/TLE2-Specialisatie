@@ -1,10 +1,11 @@
 import express from 'express';
 import Signs from "../Models/signsModel.js";
+import {tr} from "@faker-js/faker";
 
 const router = express.Router();
 
 router.options('/', (req, res) => {
-    res.json("hallo")
+    res.json("hallo");
     res.header('Allow', 'GET, POST, OPTIONS');
     res.header('Content-Type', 'application/x-www-form-urlencoded');
     res.header('Accept', 'application/json, application/x-www-form-urlencoded');
@@ -13,30 +14,28 @@ router.options('/', (req, res) => {
 });
 
 router.get('/', async (req, res) => {
+    try {
+        const signs = await Signs.find();
+        const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
 
-    const signs = await Signs.find();
-    const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
+        const items = signs.map(signs => ({
+            ...signs.toObject(),
+            _links: {
+                self: {href: `${baseUrl}/${signs._id}`},
+                collection: {href: baseUrl}
+            }
+        }));
 
-    const items = signs.map(signs => ({
-        ...signs.toObject(),
-        _links: {
-            self: {href: `${baseUrl}/${signs._id}`},
-            collection: {href: baseUrl}
-        }
-    }));
-
-    res.json({
-        items,
-        _links: {
-            self: {href: baseUrl},
-            collection: {href: baseUrl}
-        }
-    });
-
-
-
-    // res.json({message: "Get All"})
-    // res.status(200).send();
+        res.json({
+            items,
+            _links: {
+                self: {href: baseUrl},
+                collection: {href: baseUrl}
+            }
+        });
+    } catch (e) {
+        res.status(404).send('Not found');
+    }
 });
 
 router.get('/:id', async (req, res) => {
@@ -59,41 +58,91 @@ router.get('/:id', async (req, res) => {
     } catch (err) {
         res.status(404).json({message: 'Failed to fetch sign'});
     }
-
-
-
-
-    // res.json({message: "Get One"})
-    // res.status(200).send();
 });
 
 router.post('/', async (req, res) => {
 
-    const newSign = await Signs.create({
-        title: req.body.title,
-        image: req.body.image,
-        lesson_id: req.body.lesson_id,
-        category_id: req.body.category_id,
-        saved: req.body.saved,
-    });
+    try {
+        if (req.body.title === "") {
+            res.status(400).json({
+                message: `Fill in the title`,
+            });
+        } else {
+            const data = req.body;
+            if(Array.isArray(data)){
+                const signs = req.body;
+                const result = await Signs.insertMany(signs);
+                res.status(201).json({
+                    message: 'Signs added',
+                    signs: result
+                });
+            }else if(typeof data === 'object' && !Array.isArray(data)){
+                const newSign = await Signs.create({
+                    title: req.body.title,
+                    image: req.body.image,
+                    lesson_id: req.body.lesson_id,
+                    category_id: req.body.category_id,
+                    handShape: req.body.handShape,
+                    saved: req.body.saved,
+                });
+                res.status(201).json({
+                    message: `You created ${newSign.title}`,
+                    id: newSign._id
+                });
+            }
+        }
+    } catch (e) {
+        res.status(404).send('Not found');
+    }
+});
+
+router.put('/:id', async (req, res) => {
+
+    try {
+        const updatedSign = await Signs.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+        if (!updatedSign) {
+            return res.status(404).json({message: "Sign not found"});
+        }
+        res.status(200).json({message: "Sign updated successfully", Signs: updatedSign});
+
+    } catch (e) {
+        res.status(404).send('Not found');
+    }
+});
+
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedSign = await Signs.findByIdAndDelete(req.params.id);
+        if (!deletedSign) {
+            return res.status(404).json({message: "Sign not found"});
+        }
+        res.status(204).json({message: "Sign deleted successfully", skyscraper: deletedSign});
+    } catch (e) {
+        res.status(400).json({message: "Failed to delete Sign", error: e.message});
+    }
+});
+
+router.post('/seed', async (req, res) => {
+
+    let letters = ['a', 'b', 'c', 'd', 'e'];
+    for (let i = 0; i < letters.length; i++) {
+        const newSign = await Signs.create({
+            title: letters[i],
+            image: 'lorem',
+            lesson_id: '1',
+            category_id: '1',
+            handShape: '1',
+            saved: '0',
+        });
+    }
     res.status(201).json({
-        message: `You created ${newSign.title}`,
-        id: newSign._id
+        message: `You created a,b,c,d,e`
     });
 
 
-    //res.json({message: "Post One"})
-    //res.status(200).send();
-});
-
-router.put('/:id', (req, res) => {
-    res.json({message: "Update One"})
-    res.status(200).send();
-});
-
-router.delete('/:id', (req, res) => {
-    res.json({message: "Delete One"})
-    res.status(200).send();
 });
 
 
