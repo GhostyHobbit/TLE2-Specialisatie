@@ -1,5 +1,6 @@
 import express from 'express';
 import Lesson from "../Models/lessonsModel.js";
+import mongoose from "mongoose";
 
 const LessonsRouter = express.Router();
 
@@ -43,20 +44,20 @@ LessonsRouter.post('/', async (req, res) => {
     try {
     const data = req.body;
     if(Array.isArray(data)){
-        const lessons = req.body;
+        let lessons = req.body;
         const result = await Lesson.insertMany(lessons);
         res.status(201).json({
             message: 'Lessons added',
             lessons: result
         });
     }else if(typeof data === 'object' && !Array.isArray(data)){
-        const { title, } = req.body
-        if (!title) {
+        const data = req.body
+        if (!data.title) {
             return res.status(400).json({
                 message: 'Missing or empty required field',
             });
         }
-        const lesson = new Lesson({ title });
+        const lesson = new Lesson(data);
 
         try {
             await lesson.save();

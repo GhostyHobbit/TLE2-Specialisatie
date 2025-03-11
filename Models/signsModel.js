@@ -4,7 +4,6 @@ const signsSchema = new mongoose.Schema({
      title: { type: String, required: true },
      image: { type: String, required: true },
      lesson_id: { type: Number, required: true },
-     // category_id: { type: Number, required: false },
      category: {
         type: Schema.Types.ObjectId,
         ref: 'Category',

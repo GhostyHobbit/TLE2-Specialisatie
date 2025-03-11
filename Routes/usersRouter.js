@@ -1,5 +1,7 @@
 import express from 'express';
 import Users from '../models/usersModel.js';
+import Lesson from "../Models/lessonsModel.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -50,7 +52,12 @@ router.get('/:id', async (req, res) => {
 //POST voor Users
 router.post('/', async (req, res) => {
     try {
-        let users = req.body;
+        let users = req.body; // Assuming req.body contains user data
+        const lessons = await Lesson.find(); // Fetch all lessons
+        let lessonIds = lessons.map(lesson => new mongoose.Types.ObjectId(lesson._id));
+        users.lessons = lessonIds;
+        console.log(users.lessons);
+
         if (!Array.isArray(users)) {
             users = [users]
         }
@@ -69,6 +76,10 @@ router.post('/', async (req, res) => {
 
 
         const insertedUsers = await Users.insertMany(newUsers);
+        await Lesson.updateMany(
+            { _id: { $in: lessonIds } },
+            { $addToSet: { users: users._id } }
+        );
 
         res.status(201).json({
             message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingEmails.length} Gebruikers bestaan al`,
