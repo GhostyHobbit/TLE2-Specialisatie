@@ -38,31 +38,6 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/multiplechoice/:id', async (req, res) => {
-    try {
-        // Fetch the correct sign by ID
-        const correctAnswer = await Signs.findById(req.params.id);
-
-        if (!correctAnswer) {
-            return res.status(404).json({ message: 'Sign not found' });
-        }
-
-        // Fetch three random signs from the same theme, excluding the correct answer
-        const randomSigns = await Signs.aggregate([
-            { $match: { theme: correctAnswer.category, _id: { $ne: correctAnswer._id } } }, // Match same theme but exclude the correct answer
-            { $sample: { size: 3 } } // Get 3 random documents
-        ]);
-
-        res.json({
-            correctAnswer,
-            choices: randomSigns
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
 router.get('/:id', async (req, res) => {
 
     try {

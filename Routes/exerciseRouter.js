@@ -82,6 +82,4 @@ router.get('/multiplechoice/:id', async (req, res) => {
 });
 
 
-
-
 export default router;
