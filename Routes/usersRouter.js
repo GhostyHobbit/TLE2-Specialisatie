@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
                 self: { href: `${baseUrl}/${user._id}` },
                 collection: { href: baseUrl }
             }
-        }));
+        }))
 
         res.json({ users: items })
     } catch (error) {
@@ -54,7 +54,7 @@ router.post('/', async (req, res) => {
         if (!Array.isArray(users)) {
             users = [users]
         }
-        const validRoles = ['user', 'teacher'];
+        const validRoles = ['user', 'teacher']
 
         for (const user of users) {
             if(!validRoles.includes(user.role)) {
@@ -64,19 +64,19 @@ router.post('/', async (req, res) => {
 
         const emails = users.map(user =>  user.email)
         const existingUsers = await Users.find({ email: { $in: emails } })
-        const existingMails = existingUsers.map(user => user.email)
-        const newUsers = users.filter(user => !existingMails.includes(user.email))
+        const existingEmails = existingUsers.map(user => user.email)
+        const newUsers = users.filter(user => !existingEmails.includes(user.email))
 
 
         const insertedUsers = await Users.insertMany(newUsers);
 
         res.status(201).json({
-            message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingMails.length} Gebruikers bestaan al`,
+            message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingEmails.length} Gebruikers bestaan al`,
             NewUsers: insertedUsers.map(user => ({
                 id: user._id,
                 email: user.email
             })),
-            ExistingUsers: existingMails.map(email => ({ email }))
+            ExistingUsers: existingEmails.map(email => ({ email }))
         });
     } catch (error) {
         console.error(error);
