@@ -1,5 +1,5 @@
 import express from 'express';
-import Users from '../models/usersModel.js';
+import Users from '../Models/usersModel.js';
 import Lesson from "../Models/lessonsModel.js";
 import mongoose from "mongoose";
 import Signs from "../Models/signsModel.js";
