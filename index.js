@@ -5,6 +5,7 @@ import SignsRouter from "./Routes/signsRouter.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
 import categoryRouter from "./Routes/categoryRouter.js";
+import LessonsRouter from "./Routes/lessonRouter.js";
 
 const app = express();
 
@@ -29,7 +30,6 @@ app.use((req, res, next) => {
     }
 });
 
-app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
 
 app.use(async(req, res, next) => {
@@ -44,7 +44,6 @@ app.use(async(req, res, next) => {
     }
 })
 
-
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
 });
@@ -55,6 +54,9 @@ app.get('/',(req,res)=> {
 
 app.use('/signs', SignsRouter)
 app.use('/categories', categoryRouter)
+app.use('/exercises', exerciseRouter);
+app.use('/lessons', LessonsRouter)
+
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
     res.header('Allow', 'GET, POST, OPTIONS');

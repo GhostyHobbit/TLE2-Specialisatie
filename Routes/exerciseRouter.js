@@ -22,12 +22,14 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     try{
-    const data = req.body;
+    const { type, question, answer, lesson } = req.body;
+        if (!lesson) {
+            return res.status(404).json({
+                message: 'Lesson not found',
+            });
+        }
         const exercise = await Exercise.create({
-            type: req.body.type,
-            question: req.body.question,
-            answer: req.body.answer,
-            lesson_id: req.body.lesson_id,
+            type, question, answer, lesson
         });
         res.status(201).json(exercise);
     }catch{
