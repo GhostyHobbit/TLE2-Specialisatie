@@ -6,6 +6,7 @@ import usersRouter from "./Routes/usersRouter.js";
 import deleteOldUsers from "./Tasks/deleteOldUsers.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
+import lessonRouter from "./Routes/lessonRouter.js";
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.get('/',(req,res)=> {
 })
 
 app.use('/signs', SignsRouter)
+app.use('/lessons', lessonRouter)
 
 app.use('/users', usersRouter)
 
