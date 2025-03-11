@@ -37,6 +37,7 @@ router.post('/', async (req, res) => {
             type: req.body.type,
             question: req.body.question,
             answer: req.body.answer,
+            video: req.body.video,
             lesson_id: req.body.lesson_id,
         });
         res.status(201).json(exercise);
