@@ -43,7 +43,6 @@ app.use(async(req, res, next) => {
     }
 })
 
-
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
 });
