@@ -8,7 +8,8 @@ const exerciseSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Lesson',
         required: true
-    }
+    },
+    video: {type: String, required: false},
 },
 {
     toJSON:{
@@ -35,7 +36,7 @@ const exerciseSchema = new mongoose.Schema({
             delete ret.__v
         }
     }
-    });
+});
 
 const Exercise = mongoose.model('Exercise', exerciseSchema);
 

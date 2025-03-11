@@ -33,14 +33,14 @@ router.post('/', async (req, res) => {
             });
 
         }else if(typeof data === 'object' && !Array.isArray(data)){
-            const { type, question, answer, lesson } = req.body;
+            const { type, question, answer, lesson, video } = req.body;
             if (!lesson) {
                 return res.status(404).json({
                     message: 'Lesson not found',
                 });
             }
             const exercise = await Exercise.create({
-                type, question, answer, lesson
+                type, question, answer, lesson, video
             });
             res.status(201).json(exercise);
         }
