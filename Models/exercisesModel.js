@@ -4,8 +4,8 @@ const exerciseSchema = new mongoose.Schema({
     type: { type: String, required: true },
     question: { type: String, required: true },
     answer: { type: String, required: true },
-    video: {type: String, required: false},
     lesson_id : { type: Number, required: true },
+    video: {type: String, required: false},
 },
 {
     toJSON:{
