@@ -17,15 +17,20 @@ CategoriesRouter.options('/:id', (req, res) => {
 
 // Create Category
 CategoriesRouter.post('/', async (req, res) => {
-    const { categoryName,  } = req.body;
+    const { categoryName, lesson } = req.body;
 
-    if (!categoryName ) {
+    if (!categoryName) {
         return res.status(400).json({
             message: 'Missing or empty required field (name)',
         });
     }
+    if (!lesson) {
+        return res.status(404).json({
+            message: 'Lesson not found',
+        });
+    }
 
-    const category = new Category({ categoryName });
+    const category = new Category({ categoryName, lesson });
 
     try {
         await category.save();
@@ -101,7 +106,8 @@ CategoriesRouter.delete('/:id', async (req, res) => {
 // Get All Categories
 CategoriesRouter.get('/', async (req, res) => {
     try {
-        const categories = await Category.find({});
+        const categories = await Category.find()
+            .populate({path: 'categorySigns', select: 'title image lesson_id'});
         res.status(200).json({
             "items": categories,
             "_links": {

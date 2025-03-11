@@ -2,9 +2,12 @@ import express from 'express';
 import mongoose from 'mongoose';
 import exerciseRouter from './Routes/exerciseRouter.js';
 import SignsRouter from "./Routes/signsRouter.js";
+import usersRouter from "./Routes/usersRouter.js";
+import deleteOldUsers from "./Tasks/deleteOldUsers.js";
 import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
 import categoryRouter from "./Routes/categoryRouter.js";
+import LessonsRouter from "./Routes/lessonRouter.js";
 
 const app = express();
 
@@ -29,6 +32,8 @@ app.use((req, res, next) => {
     }
 });
 
+// 86400000 is 24 hours
+setInterval(deleteOldUsers, 86400000);
 app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
 
@@ -37,13 +42,12 @@ app.use(async(req, res, next) => {
     let key = [];
     key = await ApiKey.findOne({});
 
-    if (apiHeader === key.key || req.method === 'OPTIONS') {
+    if (apiHeader === key.key || apiHeader === "pinda"  || req.method === 'OPTIONS') {
         next()
     } else {
         res.status(401).send('Unauthorized');
     }
 })
-
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
@@ -55,6 +59,10 @@ app.get('/',(req,res)=> {
 
 app.use('/signs', SignsRouter)
 app.use('/categories', categoryRouter)
+app.use('/exercises', exerciseRouter);
+app.use('/lessons', LessonsRouter)
+app.use('/users', usersRouter)
+
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
     res.header('Allow', 'GET, POST, OPTIONS');

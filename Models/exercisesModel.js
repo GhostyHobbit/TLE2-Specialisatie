@@ -1,14 +1,43 @@
-import mongoose from "mongoose";
+import mongoose, {Schema} from "mongoose";
 
 const exerciseSchema = new mongoose.Schema({
-     type: { type: String, required: true },
-     question: { type: String, required: true },
-     answer: { type: String, required: true },
-     lesson_id : { type: Number, required: true },
-    });
+    type: {type: String, required: true},
+    question: {type: String, required: true},
+    answer: {type: String, required: true},
+    lesson: {
+        type: Schema.Types.ObjectId,
+        ref: 'Lesson',
+        required: true
+    },
+    video: {type: String, required: false},
+},
+{
+    toJSON:{
+        virtuals: true,
+            versionKey: false,
+            transform: (doc, ret) => {
+            ret._links = {
+                self:{
+                    href: process.env.BASE_URL + `exercises/${ret.id}`
+                },
+                collection: {
+                    href: process.env.BASE_URL + `exercises/`
+                },
+                pagination: {
+                    total: ret.length,
+                    limit: 5,
+                    offset: 0
+                }
+            },
 
-const Exercise = mongoose.model('Excercise', exerciseSchema);
 
- 
+
+                delete ret._id
+            delete ret.__v
+        }
+    }
+});
+
+const Exercise = mongoose.model('Exercise', exerciseSchema);
 
 export default Exercise;

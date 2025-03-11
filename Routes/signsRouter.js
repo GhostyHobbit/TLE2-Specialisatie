@@ -1,6 +1,9 @@
 import express from 'express';
 import Signs from "../Models/signsModel.js";
+import Users from '../models/usersModel.js';
 import {tr} from "@faker-js/faker";
+import Category from "../Models/categoriesModel.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -15,7 +18,8 @@ router.options('/', (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const signs = await Signs.find();
+        const signs = await Signs.find()
+            .populate({path: 'users', select: 'username email role'});
         const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
 
         const items = signs.map(signs => ({
@@ -61,28 +65,53 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-
     try {
         if (req.body.title === "") {
             res.status(400).json({
                 message: `Fill in the title`,
             });
         } else {
+            const data = req.body;
+            if (Array.isArray(data)) {
+                const signs = req.body;
+                const result = await Signs.insertMany(signs);
+                res.status(201).json({
+                    message: 'Signs added',
+                    signs: result
+                });
+            } else if (typeof data === 'object' && !Array.isArray(data)) {
+                const {title, image, category, lesson} = req.body;
 
-            const newSign = await Signs.create({
-                title: req.body.title,
-                image: req.body.image,
-                lesson_id: req.body.lesson_id,
-                category_id: req.body.category_id,
-                handShape: req.body.handShape,
-                saved: req.body.saved,
-            });
-            res.status(201).json({
-                message: `You created ${newSign.title}`,
-                id: newSign._id
-            });
+                // Validate that the category exists
+                const categoryExists = await Category.findById(category);
+                if (!categoryExists) {
+                    return res.status(400).json({message: 'Category not found'});
+                }
+
+                // Create a new sign
+                const newSign = new Signs({
+                    title,
+                    image,
+                    category,
+                    lesson
+                });
+                const users = await Users.find()
+                let userIds = users.map(user => new mongoose.Types.ObjectId(user._id));
+                newSign.users = userIds;
+
+                // Save the sign to the database
+                await newSign.save();
+
+                await Users.updateMany(
+                    { _id: { $in: userIds } },
+                    { $addToSet: { lessons: newSign._id } }
+                );
+
+                // Respond with the created sign
+                res.status(201).json(newSign);
+            }
         }
-    } catch (e) {
+        } catch (e) {
         res.status(404).send('Not found');
     }
 });
@@ -132,8 +161,6 @@ router.post('/seed', async (req, res) => {
     res.status(201).json({
         message: `You created a,b,c,d,e`
     });
-
-
 });
 
 
