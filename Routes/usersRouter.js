@@ -28,7 +28,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
     try {
         const user = await Users.findById(req.params.id);
-        if (!user) {
+        if(!user) {
             return res.status(404).json({ message: 'User not found' });
         }
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
@@ -50,46 +50,55 @@ router.get('/:id', async (req, res) => {
 //POST voor Users
 router.post('/', async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
-
+        let users = req.body;
+        if (!Array.isArray(users)) {
+            users = [users]
+        }
         const validRoles = ['user', 'teacher'];
-        if (!validRoles.includes(role)) {
-            return res.status(400).json({ message: 'Ongeldige rol. Toegestane rollen zijn: user, teacher' });
+
+        for (const user of users) {
+            if(!validRoles.includes(user.role)) {
+                return res.status(400).json({ message: `Ongeldige rol voor ${user.email}. Toegestane rollen zijn: user, teacher` });
+            }
         }
 
-        const newUser = await Users.create({
-            username,
-            email,
-            password,
-            role,
-        });
+        const emails = users.map(user =>  user.email)
+        const existingUsers = await Users.find({ email: { $in: emails } })
+        const existingMails = existingUsers.map(user => user.email)
+        const newUsers = users.filter(user => !existingMails.includes(user.email))
+
+
+        const insertedUsers = await Users.insertMany(newUsers);
 
         res.status(201).json({
-            message: `Gebruiker ${newUser.username} succesvol aangemaakt`,
-            id: newUser._id
+            message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingMails.length} Gebruikers bestaan al`,
+            NewUsers: insertedUsers.map(user => ({
+                id: user._id,
+                email: user.email
+            })),
+            ExistingUsers: existingMails.map(email => ({ email }))
         });
     } catch (error) {
         console.error(error);
         if (error.name === 'ValidationError') {
-            return res.status(400).json({ message: error.message });
+            return res.status(400).json({ message: error.message })
         }
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error' })
     }
-});
+})
+
 
 //PUT voor users
 router.put('/:id', async (req, res) => {
     try {
-        const { username, email, password, role } = req.body;
+        const { email, role } = req.body;
 
         const user = await Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User niet gevonden' });
         }
 
-        user.username = username
         user.email = email
-        user.password = password
         user.role = role
 
         await user.save();
@@ -115,7 +124,7 @@ router.delete('/:id', async (req, res) => {
     try {
         const user = await Users.findByIdAndDelete(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User niet gevonden' });
+            return res.status(404).json({ message: 'User niet gevonden' })
         }
         res.json({ message: `Gebruiker ${user.username} succesvol verwijderd` });
     } catch (error) {
