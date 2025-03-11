@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
             }
         }));
 
-        res.json({ users: items });
+        res.json({ users: items })
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
@@ -29,7 +29,7 @@ router.get('/:id', async (req, res) => {
     try {
         const user = await Users.findById(req.params.id);
         if(!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ message: 'User bestaat niet of is niet gevonden' });
         }
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
         const item = {
@@ -95,7 +95,7 @@ router.put('/:id', async (req, res) => {
 
         const user = await Users.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User niet gevonden' });
+            return res.status(404).json({ message: 'User niet gevonden' })
         }
 
         user.email = email
@@ -126,12 +126,21 @@ router.delete('/:id', async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: 'User niet gevonden' })
         }
-        res.json({ message: `Gebruiker ${user.username} succesvol verwijderd` });
+        res.json({ message: `Gebruiker ${user.email} succesvol verwijderd` });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ message: 'Internal server error' })
     }
-});
+})
 
-
+//DELETE all voor testing
+router.delete('/', async (req, res) => {
+    try {
+        const result = await Users.deleteMany({})
+        res.json({ message: `${ result.deletedCount} gebruikers deleted` });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' })
+    }
+})
 export default router;
