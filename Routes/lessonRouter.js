@@ -27,9 +27,23 @@ router.get('/:id', async (req, res) => {
 // Create a lesson
 router.post('/', async (req, res) => {
     try {
-        const newLesson = new Lesson({ title: req.body.title });
-        await newLesson.save();
+    const data = req.body;
+    if(Array.isArray(data)){
+        const lessons = req.body;
+        const result = await Lesson.insertMany(lessons);
+        res.status(201).json({
+            message: 'Lessons added',
+            lessons: result
+        });
+    }else if(typeof data === 'object' && !Array.isArray(data)){
+        const newLesson = await Lesson.create({
+            title: req.body.title,
+            exercise_id: req.body.exercise_id,
+        });
         res.status(201).json(newLesson);
+    }else{
+        res.status(400).json({ error: 'Invalid data' });
+    }
     } catch (err) {
         res.status(400).json({ message: "Error creating lesson" });
     }
