@@ -6,6 +6,16 @@ import Signs from "../Models/signsModel.js";
 
 const router = express.Router();
 
+
+
+router.options('/', (req, res) => {
+    res.json("hallo");
+    res.header('Allow', 'GET, POST, OPTIONS, DELETE');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PATCH, DELETE');
+    res.status(204).send();
+});
+
+
 //GET voor Users
 router.get('/', async (req, res) => {
     try {
