@@ -12,7 +12,6 @@ LessonsRouter.get('/', async (req, res) => {
             .populate([
                 {path: 'lessonCategories', select: 'categoryName'},
                 {path: 'lessonSigns', select: 'title'},
-                {path: 'lessonExercises', select: 'type question answer'},
                 {path: 'users', select: 'username email role'},
             ]);
         res.status(200).json({
