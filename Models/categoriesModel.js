@@ -15,6 +15,12 @@ categorySchema.virtual('categorySigns', {
     foreignField: 'category', // is equal to foreignField
 });
 
+categorySchema.virtual('categoryExercises', {
+    ref: 'Exercise', //The Model to use
+    localField: '_id', //Find in Model, where localField
+    foreignField: 'category', // is equal to foreignField
+});
+
 // Set Object and Json property to true. Default is set to false
 categorySchema.set('toObject', { virtuals: true });
 categorySchema.set('toJSON', { virtuals: true });

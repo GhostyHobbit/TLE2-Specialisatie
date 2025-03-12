@@ -107,7 +107,10 @@ CategoriesRouter.delete('/:id', async (req, res) => {
 CategoriesRouter.get('/', async (req, res) => {
     try {
         const categories = await Category.find()
-            .populate({path: 'categorySigns', select: 'title image lesson_id'});
+            .populate([
+                {path: 'categorySigns', select: 'title image lesson_id'},
+                {path: 'categoryExercises', select: 'type question answer'}
+            ]);
         res.status(200).json({
             "items": categories,
             "_links": {

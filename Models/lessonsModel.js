@@ -21,12 +21,6 @@ lessonSchema.virtual('lessonSigns', {
     foreignField: 'lesson', // is equal to foreignField
 });
 
-lessonSchema.virtual('lessonExercises', {
-    ref: 'Exercise', //The Model to use
-    localField: '_id', //Find in Model, where localField
-    foreignField: 'lesson', // is equal to foreignField
-});
-
 // Set Object and Json property to true. Default is set to false
 lessonSchema.set('toObject', { virtuals: true });
 lessonSchema.set('toJSON', { virtuals: true });
