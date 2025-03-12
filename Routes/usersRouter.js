@@ -114,13 +114,13 @@ router.post('/', async (req, res) => {
 //PUT voor users
 router.put('/:id', async (req, res) => {
     try {
-        const { email, role } = req.body;
+        const { email, role, username } = req.body;
 
         const user = await Users.findById(req.params.id);
         if (!user) {
             return res.status(404).json({ message: 'User niet gevonden' })
         }
-
+        user.username = username
         user.email = email
         user.role = role
 
