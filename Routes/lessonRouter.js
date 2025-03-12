@@ -32,12 +32,34 @@ LessonsRouter.get('/', async (req, res) => {
 
 // Get a single lesson
 LessonsRouter.get('/:id', async (req, res) => {
+    // try {
+    //     const lesson = await Lesson.findById(req.params.id);
+    //     if (!lesson) return res.status(404).json({ message: "Lesson not found" });
+    //     res.json(lesson);
+    // } catch (err) {
+    //     res.status(500).json({ message: "Error fetching lesson" });
+    // }
+
     try {
-        const lesson = await Lesson.findById(req.params.id);
-        if (!lesson) return res.status(404).json({ message: "Lesson not found" });
-        res.json(lesson);
-    } catch (err) {
-        res.status(500).json({ message: "Error fetching lesson" });
+        const lessons = await Lesson.findById(req.params.id)
+            .populate([
+                {path: 'lessonCategories', select: 'categoryName'},
+                {path: 'lessonSigns', select: 'title'},
+                {path: 'users', select: 'username email role'},
+            ]);
+        res.status(200).json({
+            "items": lessons,
+            "_links": {
+                "self": {
+                    "href": `${process.env.SELF_LINK}/Lessons`
+                },
+                "collection": {
+                    "href": `${process.env.SELF_LINK}/Lessons`
+                }
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching lessons', error: error.message });
     }
 });
 
