@@ -37,17 +37,17 @@ setInterval(deleteOldUsers, 86400000);
 app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
 
-// app.use(async(req, res, next) => {
-//     const apiHeader = req.headers['apikey'];
-//     let key = [];
-//     key = await ApiKey.findOne({});
-//
-//     if (apiHeader === key.key || apiHeader === "pinda"  || req.method === 'OPTIONS') {
-//         next()
-//     } else {
-//         res.status(401).send('Unauthorized');
-//     }
-// })
+app.use(async(req, res, next) => {
+    const apiHeader = req.headers['apikey'];
+    let key = [];
+    key = await ApiKey.findOne({});
+
+    if (apiHeader === key.key || apiHeader === "pinda"  || req.method === 'OPTIONS') {
+        next()
+    } else {
+        res.status(401).send('Unauthorized');
+    }
+})
 
 app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
