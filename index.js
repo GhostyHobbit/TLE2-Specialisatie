@@ -8,6 +8,7 @@ import ApiKey from "./Models/apiKeyModel.js";
 import ApiKeyRouter from "./Routes/apiKeyRouter.js";
 import categoryRouter from "./Routes/categoryRouter.js";
 import LessonsRouter from "./Routes/lessonRouter.js";
+import knnRouter from "./Routes/knnRouter.js"
 
 const app = express();
 
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 setInterval(deleteOldUsers, 86400000);
 app.use('/exercises', exerciseRouter);
 app.use('/keygen', ApiKeyRouter)
+app.use('/api', knnRouter);
 
 app.use(async(req, res, next) => {
     const apiHeader = req.headers['apikey'];
