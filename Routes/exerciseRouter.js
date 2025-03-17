@@ -2,10 +2,11 @@ import express from 'express';
 import Exercise  from '../Models/exercisesModel.js';
 import { faker } from '@faker-js/faker';
 import Signs from "../Models/signsModel.js";
+import mongoose from "mongoose";
 
-const router = express.Router();
+const exerciseRouter = express.Router();
 
-router.get('/', async (req, res) => {
+exerciseRouter.get('/', async (req, res) => {
     try {
         const exercises = await Exercise.find({});
         const collection = {
@@ -21,7 +22,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.post('/', async (req, res) => {
+exerciseRouter.post('/', async (req, res) => {
     try{
         const data = req.body;
         if(Array.isArray(data)){
@@ -49,7 +50,7 @@ router.post('/', async (req, res) => {
     }
 });
 
-router.delete('/', async (req, res) => {
+exerciseRouter.delete('/', async (req, res) => {
     try {
         await Exercise.deleteMany({});
         res.status(204).send();
@@ -59,7 +60,7 @@ router.delete('/', async (req, res) => {
 });
 
 
-router.get('/multiplechoice/:id', async (req, res) => {
+exerciseRouter.get('/multiplechoice/:id', async (req, res) => {
     try {
         // Fetch the correct sign by ID
         const correctAnswer = await Signs.findById(req.params.id);
@@ -70,10 +71,15 @@ router.get('/multiplechoice/:id', async (req, res) => {
 
         // Fetch three random signs from the same theme, excluding the correct answer
         const randomSigns = await Signs.aggregate([
-            { $match: { theme: correctAnswer.category, _id: { $ne: correctAnswer._id } } }, // Match same theme but exclude the correct answer
-            { $sample: { size: 3 } } // Get 3 random documents
+            {
+                $match: {
+                    category: new mongoose.Types.ObjectId(correctAnswer.category),
+                    _id: { $ne: correctAnswer._id }
+                }
+            },
+            { $sample: { size: 3 } }
         ]);
-
+        console.log(randomSigns)
         res.json({
             correctAnswer,
             choices: randomSigns
@@ -85,4 +91,4 @@ router.get('/multiplechoice/:id', async (req, res) => {
 });
 
 
-export default router;
+export default exerciseRouter;
