@@ -4,6 +4,7 @@ import Users from '../Models/usersModel.js';
 import {tr} from "@faker-js/faker";
 import Category from "../Models/categoriesModel.js";
 import mongoose from "mongoose";
+import Lesson from "../Models/lessonsModel.js";
 
 const router = express.Router();
 
@@ -73,8 +74,23 @@ router.post('/', async (req, res) => {
         } else {
             const data = req.body;
             if (Array.isArray(data)) {
+                await Signs.deleteMany({});
                 const signs = req.body;
+
+                const users = await Users.find()
+                let userIds = users.map(user => new mongoose.Types.ObjectId(user._id));
+                for (const sign of signs) {
+                    sign.users = userIds
+                }
+
                 const result = await Signs.insertMany(signs);
+
+                for (const sign of result) {
+                    await Users.updateMany(
+                        { _id: { $in: userIds } },
+                        { $addToSet: { signs: sign._id } }
+                    );
+                }
                 res.status(201).json({
                     message: 'Signs added',
                     signs: result
