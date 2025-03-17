@@ -2,11 +2,6 @@ import mongoose, {Schema} from "mongoose";
 
 const lessonSchema = new mongoose.Schema({
     title: { type: String, required: true },
-    users: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Users',
-        required: true
-    }]
 });
 
 lessonSchema.virtual('lessonCategories', {

@@ -9,16 +9,6 @@ const userSchema = new mongoose.Schema({
         enum: ['user', 'teacher'],
     },
     created_at: {type: Date, default: Date.now},
-    lessons: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Lesson',
-        required: true
-    }],
-    signs: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Signs',
-        required: true
-    }],
     lessonProgress: [{
             lesson_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
             progress: {type: Number, default: 0}

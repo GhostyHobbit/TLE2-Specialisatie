@@ -75,10 +75,6 @@ router.post('/', async (req, res) => {
             if (Array.isArray(data)) {
                 let users = req.body; // Assuming req.body contains user data
                 const lessons = await Lesson.find(); // Fetch all lessons
-                let lessonIds = lessons.map(lesson => new mongoose.Types.ObjectId(lesson._id));
-                for (const user of users) {
-                    user.lessons = lessonIds
-                }
                 let lessonArray = [];
 
                 for (const lesson of lessons) {
@@ -89,10 +85,6 @@ router.post('/', async (req, res) => {
                 }
 
                 const signs = await Signs.find(); // Fetch all lessons
-                let signIds = signs.map(sign => new mongoose.Types.ObjectId(sign._id));
-                for (const user of users) {
-                    user.signs = signIds
-                }
                 let signsArray = [];
 
                 for (const sign of signs) {
@@ -116,17 +108,6 @@ router.post('/', async (req, res) => {
                 const newUsers = users.filter(user => !existingEmails.includes(user.email))
 
                 const result = await Users.insertMany(newUsers);
-
-                for (const user of result) {
-                    await Lesson.updateMany(
-                        { _id: { $in: lessonIds } },
-                        { $addToSet: { users: user._id } }
-                    );
-                    await Signs.updateMany(
-                        { _id: { $in: signIds } },
-                        { $addToSet: { users: user._id } }
-                    );
-                }
                 res.status(201).json({
                     message: 'Users added',
                     users: result
@@ -141,11 +122,7 @@ router.post('/', async (req, res) => {
                     role
                 });
                 const lessons = await Lesson.find()
-                let lessonIds = lessons.map(lesson => new mongoose.Types.ObjectId(lesson._id));
-                newUser.lessons = lessonIds;
                 const signs = await Signs.find()
-                let signIds = signs.map(sign => new mongoose.Types.ObjectId(sign._id));
-                newUser.signs = signIds;
                 let lessonArray = [];
                 for (const lesson of lessons) {
                     lessonArray.push({ lesson_id: new mongoose.Types.ObjectId(lesson._id) });
@@ -159,15 +136,6 @@ router.post('/', async (req, res) => {
 
                 // Save the user to the database
                 await newUser.save();
-
-                await Lesson.updateMany(
-                    { _id: { $in: lessonIds } },
-                    { $addToSet: { users: newUser._id } }
-                );
-                await Signs.updateMany(
-                    { _id: { $in: signIds } },
-                    { $addToSet: { users: newUser._id } }
-                );
 
                 // Respond with the created sign
                 res.status(201).json(newUser);

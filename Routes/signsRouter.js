@@ -19,8 +19,7 @@ router.options('/', (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const signs = await Signs.find()
-            .populate({path: 'users', select: 'username email role'});
+        const signs = await Signs.find();
         const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
 
         const items = signs.map(signs => ({
@@ -77,20 +76,8 @@ router.post('/', async (req, res) => {
                 await Signs.deleteMany({});
                 const signs = req.body;
 
-                const users = await Users.find()
-                let userIds = users.map(user => new mongoose.Types.ObjectId(user._id));
-                for (const sign of signs) {
-                    sign.users = userIds
-                }
-
                 const result = await Signs.insertMany(signs);
 
-                for (const sign of result) {
-                    await Users.updateMany(
-                        { _id: { $in: userIds } },
-                        { $addToSet: { signs: sign._id } }
-                    );
-                }
                 res.status(201).json({
                     message: 'Signs added',
                     signs: result
@@ -111,17 +98,9 @@ router.post('/', async (req, res) => {
                     category,
                     lesson
                 });
-                const users = await Users.find()
-                let userIds = users.map(user => new mongoose.Types.ObjectId(user._id));
-                newSign.users = userIds;
 
                 // Save the sign to the database
                 await newSign.save();
-
-                await Users.updateMany(
-                    { _id: { $in: userIds } },
-                    { $addToSet: { lessons: newSign._id } }
-                );
 
                 // Respond with the created sign
                 res.status(201).json(newSign);

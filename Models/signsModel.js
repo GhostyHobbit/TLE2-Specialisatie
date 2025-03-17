@@ -13,11 +13,6 @@ const signsSchema = new mongoose.Schema({
         ref: 'Lesson',
         required: true
      },
-     users: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Users',
-        required: true
-     }]
     });
 
 const Signs = mongoose.model('Signs', signsSchema);
