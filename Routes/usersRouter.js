@@ -20,9 +20,7 @@ router.options('/', (req, res) => {
 //GET voor Users
 router.get('/', async (req, res) => {
     try {
-        const users = await Users.find()
-            .populate({path: 'lessons', select: 'title'})
-            .populate({path: 'signs', select: 'title'});
+        const users = await Users.find();
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
 
         const items = users.map(user => ({
