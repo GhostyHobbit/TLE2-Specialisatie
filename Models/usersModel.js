@@ -18,8 +18,12 @@ const userSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         ref: 'Signs',
         required: true
+    }],
+    lessonProgress: [{
+            lesson_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
+            progress: {type: Number, default: 0}
     }]
-    });
+});
 
 const Users =  mongoose.model('Users', userSchema);
 

@@ -90,7 +90,7 @@ LessonsRouter.post('/', async (req, res) => {
             await lesson.save();
             await Users.updateMany(
                 { _id: { $in: userIds } },
-                { $addToSet: { lessons: lesson._id } }
+                { $addToSet: { lessons: lesson._id } },
             );
             res.status(201).json({ lesson });
         } catch (error) {
