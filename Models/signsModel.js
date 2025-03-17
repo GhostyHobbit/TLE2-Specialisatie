@@ -3,7 +3,6 @@ import mongoose, {Schema} from "mongoose";
 const signsSchema = new mongoose.Schema({
      title: { type: String, required: true },
      image: { type: String, required: true },
-     saved: {type: Boolean, default: false, required: true },
      category: {
         type: Schema.Types.ObjectId,
         ref: 'Category',
