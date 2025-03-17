@@ -1043,24 +1043,150 @@ const signs = [
             "lesson": "67d1813a45652c47f5368a72",
             "image": "30"
         },
-    {
-        "title": "21 t/m 30",
-        "category": "67d18c5045652c47f5368b82",
-        "lesson": "67d1813a45652c47f5368a72",
-        "image": "21 t/m 30",
-    },
-    {
-        "title": "20, 30, 40, ... 100",
-        "category": "67d18c5045652c47f5368b82",
-        "lesson": "67d1813a45652c47f5368a72",
-        "image": "20, 30, 40, ... 100",
-    },
-    {
-        "title": "22, 33, 44, ... 99",
-        "category": "67d18c5045652c47f5368b82",
-        "lesson": "67d1813a45652c47f5368a72",
-        "image": "22, 33, 44, ... 99",
-    },
+        {
+            "title": "21",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "21"
+        },
+        {
+            "title": "22",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "22"
+        },
+        {
+            "title": "23",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "23"
+        },
+        {
+            "title": "24",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "24"
+        },
+        {
+            "title": "25",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "25"
+        },
+        {
+            "title": "26",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "26"
+        },
+        {
+            "title": "27",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "27"
+        },
+        {
+            "title": "28",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "28"
+        },
+        {
+            "title": "29",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "29"
+        },
+        {
+            "title": "30",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "30"
+        },
+        {
+            "title": "40",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "40"
+        },
+        {
+            "title": "50",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "50"
+        },
+        {
+            "title": "60",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "60"
+        },
+        {
+            "title": "70",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "70"
+        },
+        {
+            "title": "80",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "80"
+        },
+        {
+            "title": "90",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "90"
+        },
+        {
+            "title": "100",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "100"
+        },
+        {
+            "title": "33",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "33"
+        },
+        {
+            "title": "44",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "44"
+        },
+        {
+            "title": "55",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "55"
+        },
+        {
+            "title": "66",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "66"
+        },
+        {
+            "title": "77",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "77"
+        },
+        {
+            "title": "88",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "88"
+        },
+        {
+            "title": "99",
+            "category": "67d18c5045652c47f5368b82",
+            "lesson": "67d1813a45652c47f5368a72",
+            "image": "99"
+        },
     {
         "title": "Tellen",
         "category": "67d18c5045652c47f5368b82",
