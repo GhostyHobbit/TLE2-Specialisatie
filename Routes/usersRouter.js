@@ -216,13 +216,22 @@ router.put('/:id', async (req, res) => {
 
 router.patch('/:id', async (req, res) => {
     try {
-        const { lessonId, progress } = req.body;
-        const lesson_id = new mongoose.Types.ObjectId(lessonId)
-        await Users.updateOne(
-            { _id: req.params.id, 'lessonProgress.lesson_id': lesson_id },
-            { $set: { 'lessonProgress.$.progress': progress } },
-            { upsert: true } // Create if it does not exist
-        );
+        const { lessonId, signId, progress, saved } = req.body;
+        if (!signId) {
+            const lesson_id = new mongoose.Types.ObjectId(lessonId)
+            await Users.updateOne(
+                { _id: req.params.id, 'lessonProgress.lesson_id': lesson_id },
+                { $set: { 'lessonProgress.$.progress': progress } },
+                { upsert: true } // Create if it does not exist
+            );
+        } else {
+            const sign_id = new mongoose.Types.ObjectId(signId)
+            await Users.updateOne(
+                { _id: req.params.id, 'signsSaved.sign_id': sign_id },
+                { $set: { 'signsSaved.$.saved': saved } },
+                { upsert: true } // Create if it does not exist
+            );
+        }
         res.status(201).json({ message: 'progress updated'})
     } catch (error) {
         console.error(error);
