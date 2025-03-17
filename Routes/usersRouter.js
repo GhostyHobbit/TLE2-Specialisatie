@@ -87,12 +87,19 @@ router.post('/', async (req, res) => {
                 for (const user of users) {
                     user.lessonProgress = lessonArray
                 }
-                console.log(users.lessonProgress)
 
                 const signs = await Signs.find(); // Fetch all lessons
                 let signIds = signs.map(sign => new mongoose.Types.ObjectId(sign._id));
                 for (const user of users) {
                     user.signs = signIds
+                }
+                let signsArray = [];
+
+                for (const sign of signs) {
+                    signsArray.push({ sign_id: new mongoose.Types.ObjectId(sign._id) });
+                }
+                for (const user of users) {
+                    user.signsSaved = signsArray
                 }
 
                 const validRoles = ['user', 'teacher']
@@ -144,6 +151,11 @@ router.post('/', async (req, res) => {
                     lessonArray.push({ lesson_id: new mongoose.Types.ObjectId(lesson._id) });
                 }
                 newUser.lessonProgress = lessonArray
+                let signsArray = [];
+                for (const sign of signs) {
+                    signsArray.push({ sign_id: new mongoose.Types.ObjectId(sign._id) });
+                }
+                newUser.signsSaved = signsArray
 
                 // Save the user to the database
                 await newUser.save();

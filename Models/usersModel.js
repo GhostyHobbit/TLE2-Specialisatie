@@ -22,6 +22,10 @@ const userSchema = new mongoose.Schema({
     lessonProgress: [{
             lesson_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Lesson' },
             progress: {type: Number, default: 0}
+    }],
+    signsSaved: [{
+        sign_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Signs' },
+        saved: {type: Boolean, default: false}
     }]
 });
 
