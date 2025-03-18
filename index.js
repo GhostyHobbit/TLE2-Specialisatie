@@ -42,14 +42,6 @@ app.use((req, res, next) => {
 // 86400000 is 24 hours
 setInterval(deleteOldUsers, 86400000);
 
-app.use('/keygen', (req, res) => {
-    import(`./Routes/${req.apiVersion}/ApiKeyRouter.js`).then(({ default: router }) => router(req, res))
-})
-
-app.use('/api', (req, res) => {
-    import(`./Routes/${req.apiVersion}/knnRouter.js`).then(({ default: router }) => router(req, res))
-})
-
 app.use(async(req, res, next) => {
     const apiHeader = req.headers['apikey'];
     let key = [];
@@ -66,26 +58,22 @@ app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
 });
 
-app.use('/signs', (req, res) => {
-    import(`./Routes/${req.apiVersion}/signsRouter.js`).then(({ default: router }) => router(req, res))
-})
+const loadRouter = (route) => {
+    return (req, res) => {
+        import(`./Routes/${req.apiVersion}/${route}.js`)
+            .then(({ default: router }) => router(req, res))
+            .catch(err => res.status(500).send('Error met laden van de route'))
+    }
+}
 
-app.use('/categories', (req, res) => {
-    import(`./Routes/${req.apiVersion}/categoryRouter.js`).then(({ default: router }) => router(req, res))
-})
+app.use('/signs', loadRouter('signsRouter'))
+app.use('/categories', loadRouter('categoryRouter'))
+app.use('/users', loadRouter('usersRouter'))
+app.use('/lessons', loadRouter('lessonRouter'))
+app.use('/exercises', loadRouter('exerciseRouter'))
 
-app.use('/users', (req, res) => {
-    import(`./Routes/${req.apiVersion}/usersRouter.js`).then(({ default: router }) => router(req, res))
-})
-
-app.use('/lessons', (req, res) => {
-    import(`./Routes/${req.apiVersion}/lessonRouter.js`).then(({ default: router }) => router(req, res))
-})
-
-app.use('/exercises', (req, res) => {
-    import(`./Routes/${req.apiVersion}/exerciseRouter.js`).then(({ default: router }) => router(req, res))
-})
-
+app.use('/keygen', loadRouter('ApiKeyRouter'))
+app.use('/api', loadRouter('knnRouter'))
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})
