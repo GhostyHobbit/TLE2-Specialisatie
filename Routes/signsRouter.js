@@ -40,7 +40,6 @@ router.get('/', async (req, res) => {
             Signs.find(query)
                 .skip(skip)
                 .limit(limit)
-                .populate({ path: 'users', select: 'username email role' })
         ]);
 
         const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
