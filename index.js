@@ -1,14 +1,14 @@
 import express from 'express';
 import mongoose from 'mongoose';
-import exerciseRouter from './Routes/exerciseRouter.js';
-import SignsRouter from "./Routes/signsRouter.js";
-import usersRouter from "./Routes/usersRouter.js";
+import exerciseRouter from './Routes/v1/exerciseRouter.js';
+import SignsRouter from "./Routes/v1/signsRouter.js";
+import usersRouter from "./Routes/v1/usersRouter.js";
 import deleteOldUsers from "./Tasks/deleteOldUsers.js";
 import ApiKey from "./Models/apiKeyModel.js";
-import ApiKeyRouter from "./Routes/apiKeyRouter.js";
-import categoryRouter from "./Routes/categoryRouter.js";
-import LessonsRouter from "./Routes/lessonRouter.js";
-import knnRouter from "./Routes/knnRouter.js"
+import ApiKeyRouter from "./Routes/v1/apiKeyRouter.js";
+import categoryRouter from "./Routes/v1/categoryRouter.js";
+import LessonsRouter from "./Routes/v1/lessonRouter.js";
+import knnRouter from "./Routes/v1/knnRouter.js"
 
 const app = express();
 
@@ -19,7 +19,7 @@ app.use(express.urlencoded({extended:true}));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*')
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, apikey')
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, apikey, Accept-Version')
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
     next()
 })
@@ -34,11 +34,14 @@ app.use((req, res, next) => {
     }
 });
 
+//zet de versie van de api op v1 als er geen specificatie is
+app.use((req, res, next) => {
+    req.apiVersion = req.headers['accept-version'] || 'v1';
+    next()
+})
+
 // 86400000 is 24 hours
 setInterval(deleteOldUsers, 86400000);
-app.use('/exercises', exerciseRouter);
-app.use('/keygen', ApiKeyRouter)
-app.use('/api', knnRouter);
 
 app.use(async(req, res, next) => {
     const apiHeader = req.headers['apikey'];
@@ -56,15 +59,23 @@ app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
 });
 
-app.get('/',(req,res)=> {
-    res.json({message: 'Welcome to the API, use OPTIONS for more options.'})
-})
+//laad dynamisch de juiste versie van de router
+const loadRouter = (route) => {
+    return (req, res) => {
+        import(`./Routes/${req.apiVersion}/${route}.js`)
+            .then(({ default: router }) => router(req, res))
+            .catch(err => res.status(500).send('Error met laden van de route'))
+    }
+}
 
-app.use('/signs', SignsRouter)
-app.use('/categories', categoryRouter)
-app.use('/exercises', exerciseRouter);
-app.use('/lessons', LessonsRouter)
-app.use('/users', usersRouter)
+app.use('/signs', loadRouter('signsRouter'))
+app.use('/categories', loadRouter('categoryRouter'))
+app.use('/users', loadRouter('usersRouter'))
+app.use('/lessons', loadRouter('lessonRouter'))
+app.use('/exercises', loadRouter('exerciseRouter'))
+
+app.use('/keygen', loadRouter('ApiKeyRouter'))
+app.use('/api', loadRouter('knnRouter'))
 
 app.options('/', (req, res) => {
     res.json({message: 'Access-Control-Allow-Methods: GET, POST, OPTIONS, PATCH'})

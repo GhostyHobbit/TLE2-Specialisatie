@@ -1,5 +1,5 @@
 import express from 'express';
-import { classifyData } from '../Models/knnModel.js';
+import { classifyData } from '../../Models/knnModel.js';
 
 const router = express.Router();
 

@@ -1,10 +1,10 @@
 import express from 'express';
-import Signs from "../Models/signsModel.js";
-import Users from '../Models/usersModel.js';
+import Signs from "../../Models/signsModel.js";
+import Users from '../../Models/usersModel.js';
 import {tr} from "@faker-js/faker";
-import Category from "../Models/categoriesModel.js";
+import Category from "../../Models/categoriesModel.js";
 import mongoose from "mongoose";
-import Lesson from "../Models/lessonsModel.js";
+import Lesson from "../../Models/lessonsModel.js";
 
 const router = express.Router();
 
