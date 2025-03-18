@@ -1,4 +1,4 @@
-import Category from "../Models/categoriesModel.js";
+import Category from "../../Models/categoriesModel.js";
 import { Router } from "express";
 import { faker } from "@faker-js/faker";
 

@@ -1,7 +1,7 @@
 import express from 'express';
-import Exercise  from '../Models/exercisesModel.js';
+import Exercise  from '../../Models/exercisesModel.js';
 import { faker } from '@faker-js/faker';
-import Signs from "../Models/signsModel.js";
+import Signs from "../../Models/signsModel.js";
 import mongoose from "mongoose";
 
 const exerciseRouter = express.Router();
