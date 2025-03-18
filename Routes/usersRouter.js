@@ -3,6 +3,7 @@ import Users from '../Models/usersModel.js';
 import Lesson from "../Models/lessonsModel.js";
 import mongoose from "mongoose";
 import Signs from "../Models/signsModel.js";
+import Category from "../Models/categoriesModel.js";
 
 
 const router = express.Router();
@@ -84,52 +85,81 @@ router.get('/:identifier', async (req, res) => {
 //POST voor Users
 router.post('/', async (req, res) => {
     try {
-        let users = req.body; // Assuming req.body contains user data
-        const lessons = await Lesson.find(); // Fetch all lessons
-        let lessonIds = lessons.map(lesson => new mongoose.Types.ObjectId(lesson._id));
-        users.lessons = lessonIds;
+        if (req.body.email === "") {
+            res.status(400).json({
+                message: `Fill in the email`,
+            });
+        } else {
+            const data = req.body;
+            if (Array.isArray(data)) {
+                let users = req.body; // Assuming req.body contains user data
+                const lessons = await Lesson.find(); // Fetch all lessons
+                let lessonArray = [];
 
-        const signs = await Signs.find(); // Fetch all lessons
-        let signIds = signs.map(sign => new mongoose.Types.ObjectId(sign._id));
-        users.signs = signIds;
+                for (const lesson of lessons) {
+                    lessonArray.push({ lesson_id: new mongoose.Types.ObjectId(lesson._id) });
+                }
+                for (const user of users) {
+                    user.lessonProgress = lessonArray
+                }
 
-        if (!Array.isArray(users)) {
-            users = [users]
-        }
-        const validRoles = ['user', 'teacher']
+                const signs = await Signs.find(); // Fetch all lessons
+                let signsArray = [];
 
-        for (const user of users) {
-            if(!validRoles.includes(user.role)) {
-                return res.status(400).json({ message: `Ongeldige rol voor ${user.email}. Toegestane rollen zijn: user, teacher` });
+                for (const sign of signs) {
+                    signsArray.push({ sign_id: new mongoose.Types.ObjectId(sign._id) });
+                }
+                for (const user of users) {
+                    user.signsSaved = signsArray
+                }
+
+                const validRoles = ['user', 'teacher']
+
+                for (const user of users) {
+                    if(!validRoles.includes(user.role)) {
+                        return res.status(400).json({ message: `Ongeldige rol voor ${user.email}. Toegestane rollen zijn: user, teacher` });
+                    }
+                }
+
+                const emails = users.map(user =>  user.email)
+                const existingUsers = await Users.find({ email: { $in: emails } })
+                const existingEmails = existingUsers.map(user => user.email)
+                const newUsers = users.filter(user => !existingEmails.includes(user.email))
+
+                const result = await Users.insertMany(newUsers);
+                res.status(201).json({
+                    message: 'Users added',
+                    users: result
+                });
+            } else if (typeof data === 'object' && !Array.isArray(data)) {
+                const {username, email, role} = req.body;
+
+                // Create a new sign
+                const newUser = new Users({
+                    username,
+                    email,
+                    role
+                });
+                const lessons = await Lesson.find()
+                const signs = await Signs.find()
+                let lessonArray = [];
+                for (const lesson of lessons) {
+                    lessonArray.push({ lesson_id: new mongoose.Types.ObjectId(lesson._id) });
+                }
+                newUser.lessonProgress = lessonArray
+                let signsArray = [];
+                for (const sign of signs) {
+                    signsArray.push({ sign_id: new mongoose.Types.ObjectId(sign._id) });
+                }
+                newUser.signsSaved = signsArray
+
+                // Save the user to the database
+                await newUser.save();
+
+                // Respond with the created sign
+                res.status(201).json(newUser);
             }
         }
-
-        const emails = users.map(user =>  user.email)
-        const existingUsers = await Users.find({ email: { $in: emails } })
-        const existingEmails = existingUsers.map(user => user.email)
-        const newUsers = users.filter(user => !existingEmails.includes(user.email))
-
-        const insertedUsers = await Users.insertMany(newUsers);
-
-        for (const user of insertedUsers) {
-            await Lesson.updateMany(
-                { _id: { $in: lessonIds } },
-                { $addToSet: { users: user._id } }
-            );
-            await Signs.updateMany(
-                { _id: { $in: signIds } },
-                { $addToSet: { users: user._id } }
-            );
-        }
-
-        res.status(201).json({
-            message: `${insertedUsers.length} gebruikers succesvol aangemaakt. ${existingEmails.length} Gebruikers bestaan al`,
-            NewUsers: insertedUsers.map(user => ({
-                id: user._id,
-                email: user.email
-            })),
-            ExistingUsers: existingEmails.map(email => ({ email }))
-        });
     } catch (error) {
         console.error(error);
         if (error.name === 'ValidationError') {
@@ -165,6 +195,31 @@ router.put('/:id', async (req, res) => {
         };
 
         res.json(updatedUser);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+});
+
+router.patch('/:id', async (req, res) => {
+    try {
+        const { lessonId, signId, progress, saved } = req.body;
+        if (!signId) {
+            const lesson_id = new mongoose.Types.ObjectId(lessonId)
+            await Users.updateOne(
+                { _id: req.params.id, 'lessonProgress.lesson_id': lesson_id },
+                { $set: { 'lessonProgress.$.progress': progress } },
+                { upsert: true } // Create if it does not exist
+            );
+        } else {
+            const sign_id = new mongoose.Types.ObjectId(signId)
+            await Users.updateOne(
+                { _id: req.params.id, 'signsSaved.sign_id': sign_id },
+                { $set: { 'signsSaved.$.saved': saved } },
+                { upsert: true } // Create if it does not exist
+            );
+        }
+        res.status(201).json({ message: 'progress updated'})
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal server error' });
