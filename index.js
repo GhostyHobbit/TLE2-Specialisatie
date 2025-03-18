@@ -34,6 +34,7 @@ app.use((req, res, next) => {
     }
 });
 
+//zet de versie van de api op v1 als er geen specificatie is
 app.use((req, res, next) => {
     req.apiVersion = req.headers['accept-version'] || 'v1';
     next()
@@ -58,6 +59,7 @@ app.listen(process.env.EXPRESS_PORT, () => {
     console.log(`Server is listening on port ${process.env.EXPRESS_PORT}`);
 });
 
+//laad dynamisch de juiste versie van de router
 const loadRouter = (route) => {
     return (req, res) => {
         import(`./Routes/${req.apiVersion}/${route}.js`)
