@@ -9,7 +9,6 @@ import Lesson from "../Models/lessonsModel.js";
 const router = express.Router();
 
 router.options('/', (req, res) => {
-    res.json("hallo");
     res.header('Allow', 'GET, POST, OPTIONS');
     res.header('Content-Type', 'application/x-www-form-urlencoded');
     res.header('Accept', 'application/json, application/x-www-form-urlencoded');
