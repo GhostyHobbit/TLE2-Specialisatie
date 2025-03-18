@@ -20,22 +20,79 @@ router.options('/', (req, res) => {
 //GET voor Users
 router.get('/', async (req, res) => {
     try {
-        console.log("v2")
-        const users = await Users.find();
-        const baseUrl = `${req.protocol}://${req.get('host')}/users`;
 
-        const items = users.map(user => ({
-            ...user.toObject(),
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit);
+        const skip = (page - 1) * limit;
+        const search = req.query.search ? req.query.search.trim().toLowerCase() : "";
+        const categoryParam = req.query.category ? req.query.category.trim() : "";
+
+        // Build the query object
+        let query = {};
+
+        // Apply search filter on title if provided
+        if (search) {
+            query.title = { $regex: search, $options: "i" };
+        }
+
+        // If a category parameter is provided, process it
+        if (categoryParam) {
+
+            // Split the category string into an array and trim each value
+            const categoryArr = categoryParam.split(',').map(cat => cat.trim());
+            // Filter out any invalid ObjectId strings to avoid cast errors
+            const validCategoryIds = categoryArr.filter(cat => mongoose.Types.ObjectId.isValid(cat));
+            if (validCategoryIds.length > 0) {
+                // Retrieve the list of categories from the database that actually exist among the provided IDs
+                const existingCategories = await Signs.distinct("category", { category: { $in: validCategoryIds } });
+
+                // If there are existing categories, add them to the query using the $in operator
+                if (existingCategories.length > 0) {
+                    query.category = { $in: existingCategories };
+                }
+            }
+        }
+
+        // Execute count and query concurrently with the defined filters and pagination
+        const [total, signs] = await Promise.all([
+            Signs.countDocuments(query),
+            Signs.find(query)
+                .skip(skip)
+                .limit(limit)
+        ]);
+
+        const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
+        const items = signs.map(sign => ({
+            ...sign.toObject(),
             _links: {
-                self: { href: `${baseUrl}/${user._id}` },
+                self: { href: `${baseUrl}/${sign._id}` },
                 collection: { href: baseUrl }
             }
-        }))
+        }));
 
-        res.json({ users: items })
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal server error' });
+        const totalPages = Math.ceil(total / limit);
+        const pagination = {
+            totalItems: total,
+            totalPages,
+            currentPage: page,
+            perPage: limit,
+            previousPage: page > 1 ? page - 1 : null,
+            nextPage: page < totalPages ? page + 1 : null,
+            search,
+            category: categoryParam
+        };
+
+        res.json({
+            items,
+            pagination,
+            _links: {
+                self: { href: baseUrl },
+                collection: { href: baseUrl }
+            }
+        });
+    } catch (e) {
+        console.error('Error in GET /signs:', e);
+        res.status(500).json({ message: 'Internal server error', error: e.message });
     }
 });
 
