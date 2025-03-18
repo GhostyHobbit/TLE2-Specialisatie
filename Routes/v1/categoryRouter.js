@@ -1,4 +1,4 @@
-import Category from "../Models/categoriesModel.js";
+import Category from "../../Models/categoriesModel.js";
 import { Router } from "express";
 import { faker } from "@faker-js/faker";
 
@@ -43,7 +43,8 @@ CategoriesRouter.post('/', async (req, res) => {
 // Get Category by ID
 CategoriesRouter.get('/:id', async (req, res) => {
     try {
-        const category = await Category.findById(req.params.id);
+        const category = await Category.findById(req.params.id)
+            .populate([{path: 'categorySigns', select: 'title image'}]);
 
         if (!category) {
             return res.status(404).json({

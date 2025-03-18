@@ -1,9 +1,9 @@
 import express from 'express';
-import Users from '../Models/usersModel.js';
-import Lesson from "../Models/lessonsModel.js";
+import Users from '../../Models/usersModel.js';
+import Lesson from "../../Models/lessonsModel.js";
 import mongoose from "mongoose";
-import Signs from "../Models/signsModel.js";
-import Category from "../Models/categoriesModel.js";
+import Signs from "../../Models/signsModel.js";
+import Category from "../../Models/categoriesModel.js";
 
 
 const router = express.Router();
@@ -20,6 +20,7 @@ router.options('/', (req, res) => {
 //GET voor Users
 router.get('/', async (req, res) => {
     try {
+        console.log("v2")
         const users = await Users.find();
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
 
