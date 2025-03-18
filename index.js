@@ -42,6 +42,7 @@ app.use((req, res, next) => {
 
 // 86400000 is 24 hours
 setInterval(deleteOldUsers, 86400000);
+app.use('/keygen', loadRouter('ApiKeyRouter'))
 
 app.use(async(req, res, next) => {
     const apiHeader = req.headers['apikey'];
@@ -74,7 +75,6 @@ app.use('/users', loadRouter('usersRouter'))
 app.use('/lessons', loadRouter('lessonRouter'))
 app.use('/exercises', loadRouter('exerciseRouter'))
 
-app.use('/keygen', loadRouter('ApiKeyRouter'))
 app.use('/api', loadRouter('knnRouter'))
 
 app.options('/', (req, res) => {
