@@ -21,10 +21,11 @@ router.get('/', async (req, res) => {
     try {
         // Extract pagination parameters from the query string (defaults: page 1, limit 10)
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        console.log(req.query.limit);
+        const limit = parseInt(req.query.limit);
         const skip = (page - 1) * limit;
         const search = req.query.search ? req.query.search.trim().toLowerCase() : "";
-
+        console.log(limit)
         // Build a query object with optional filters
         let query = {};
 
@@ -52,6 +53,7 @@ router.get('/', async (req, res) => {
         }));
 
         const totalPages = Math.ceil(total / limit);
+        console.log(totalPages)
         const pagination = {
             totalItems: total,
             totalPages,
