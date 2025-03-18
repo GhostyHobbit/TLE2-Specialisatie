@@ -4,6 +4,7 @@ import Lesson from "../Models/lessonsModel.js";
 import mongoose from "mongoose";
 import Signs from "../Models/signsModel.js";
 
+
 const router = express.Router();
 
 
@@ -40,12 +41,29 @@ router.get('/', async (req, res) => {
 });
 
 //GET single user
-router.get('/:id', async (req, res) => {
+
+router.get('/:identifier', async (req, res) => {
     try {
-        const user = await Users.findById(req.params.id);
-        if(!user) {
+        const identifier = req.params.identifier;
+        let user = null;
+
+        // Check if the identifier looks like an email
+        if (identifier.includes('@')) {
+            // Search by email (case insensitive if needed)
+            user = await Users.findOne({ email: identifier });
+        } else {
+            // Optionally, check if the identifier is a valid ObjectId
+            if (!mongoose.Types.ObjectId.isValid(identifier)) {
+                return res.status(400).json({ message: 'Invalid ID format' });
+            }
+            // Search by id
+            user = await Users.findById(identifier);
+        }
+
+        if (!user) {
             return res.status(404).json({ message: 'User bestaat niet of is niet gevonden' });
         }
+
         const baseUrl = `${req.protocol}://${req.get('host')}/users`;
         const item = {
             ...user.toObject(),
@@ -60,6 +78,7 @@ router.get('/:id', async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 });
+
 
 
 //POST voor Users

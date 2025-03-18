@@ -19,29 +19,64 @@ router.options('/', (req, res) => {
 
 router.get('/', async (req, res) => {
     try {
-        const signs = await Signs.find()
-            .populate({path: 'users', select: 'username email role'});
-        const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
+        // Extract pagination parameters from the query string (defaults: page 1, limit 10)
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+        const search = req.query.search ? req.query.search.trim().toLowerCase() : "";
 
-        const items = signs.map(signs => ({
-            ...signs.toObject(),
+        // Build a query object with optional filters
+        let query = {};
+
+        if (search) {
+            query.$or = [
+                { title: { $regex: search, $options: "i" } },
+            ];
+        }
+
+        // Execute count and query concurrently with the defined filters and pagination
+        const [total, signs] = await Promise.all([
+            Signs.countDocuments(query),
+            Signs.find(query)
+                .skip(skip)
+                .limit(limit)
+                .populate({ path: 'users', select: 'username email role' })
+        ]);
+
+        const baseUrl = `${req.protocol}://${req.get('host')}/signs`;
+        const items = signs.map(sign => ({
+            ...sign.toObject(),
             _links: {
-                self: {href: `${baseUrl}/${signs._id}`},
-                collection: {href: baseUrl}
+                self: { href: `${baseUrl}/${sign._id}` },
+                collection: { href: baseUrl }
             }
         }));
 
+        const totalPages = Math.ceil(total / limit);
+        const pagination = {
+            totalItems: total,
+            totalPages,
+            currentPage: page,
+            perPage: limit,
+            previousPage: page > 1 ? page - 1 : null,
+            nextPage: page < totalPages ? page + 1 : null,
+            search: search
+        };
+
         res.json({
             items,
+            pagination,
             _links: {
-                self: {href: baseUrl},
-                collection: {href: baseUrl}
+                self: { href: baseUrl },
+                collection: { href: baseUrl }
             }
         });
     } catch (e) {
         res.status(404).send('Not found');
     }
 });
+
+
 
 router.get('/:id', async (req, res) => {
 
