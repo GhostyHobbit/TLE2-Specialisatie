@@ -71,9 +71,11 @@ router.get('/', async (req, res) => {
             }
         });
     } catch (e) {
-        res.status(404).send('Not found');
+        console.error('Error in GET /signs:', e);
+        res.status(500).json({ message: 'Internal server error', error: e.message });
     }
 });
+
 
 router.get('/:id', async (req, res) => {
 
